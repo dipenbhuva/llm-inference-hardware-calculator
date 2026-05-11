@@ -2,8 +2,10 @@ import {
   InferenceMode,
   KvCacheQuantization,
   MemoryBreakdown,
+  ModelArchitecture,
   ModelQuantization,
 } from '../types';
+import { calculateKvCacheMemoryGb } from './kvCache';
 
 /**
  * Returns GB factor for a 1B param model based on quantization.
@@ -58,6 +60,27 @@ export const getKvCacheQuantFactor = (k: KvCacheQuantization): number => {
   }
 };
 
+const calculateLegacyKvCacheGb = (
+  modelWeightsGb: number,
+  contextLength: number,
+  kvCacheQuant: KvCacheQuantization
+): number => {
+  const alphaAt2048 = 0.2;
+  const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
+  const kvScale = contextLength / 2048;
+  return modelWeightsGb * alphaAt2048 * kvScale * kvFactor;
+};
+
+const calculateLegacyBulkKvCacheGb = (
+  modelWeightsGb: number,
+  contextLength: number,
+  kvCacheQuant: KvCacheQuantization
+): number => {
+  const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
+  const bulkScale = contextLength / 2048;
+  return modelWeightsGb * 0.1 * kvFactor * bulkScale;
+};
+
 /**
  * Calculate VRAM requirement (GB) for single-user inference and return the
  * individual memory components that make up the final estimate.
@@ -68,7 +91,9 @@ export const calculateMemoryBreakdown = (
   contextLength: number,
   useKvCache: boolean,
   kvCacheQuant: KvCacheQuantization,
-  inferenceMode: InferenceMode
+  inferenceMode: InferenceMode,
+  architecture?: ModelArchitecture,
+  concurrentRequests = 1
 ): MemoryBreakdown => {
   const modelFactor = getModelQuantFactor(modelQuant);
   const modelWeightsGb = params * modelFactor;
@@ -78,10 +103,18 @@ export const calculateMemoryBreakdown = (
 
   if (inferenceMode === 'incremental') {
     if (useKvCache) {
-      const alphaAt2048 = 0.2;
-      const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
-      const kvScale = contextLength / 2048;
-      kvCacheGb = modelWeightsGb * alphaAt2048 * kvScale * kvFactor;
+      kvCacheGb = architecture
+        ? calculateKvCacheMemoryGb({
+            architecture,
+            contextLength,
+            kvCacheQuant,
+            concurrentRequests,
+          })
+        : calculateLegacyKvCacheGb(
+            modelWeightsGb,
+            contextLength,
+            kvCacheQuant
+          );
     }
   } else {
     const bulkAlphaAt2048 = 0.5;
@@ -89,8 +122,18 @@ export const calculateMemoryBreakdown = (
     activationGb = modelWeightsGb * bulkAlphaAt2048 * bulkScale;
 
     if (useKvCache) {
-      const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
-      kvCacheGb = modelWeightsGb * 0.1 * kvFactor * bulkScale;
+      kvCacheGb = architecture
+        ? calculateKvCacheMemoryGb({
+            architecture,
+            contextLength,
+            kvCacheQuant,
+            concurrentRequests,
+          })
+        : calculateLegacyBulkKvCacheGb(
+            modelWeightsGb,
+            contextLength,
+            kvCacheQuant
+          );
     }
   }
 
@@ -112,7 +155,9 @@ export const calculateRequiredVram = (
   contextLength: number,
   useKvCache: boolean,
   kvCacheQuant: KvCacheQuantization,
-  inferenceMode: InferenceMode
+  inferenceMode: InferenceMode,
+  architecture?: ModelArchitecture,
+  concurrentRequests = 1
 ): number => {
   return calculateMemoryBreakdown(
     params,
@@ -120,7 +165,9 @@ export const calculateRequiredVram = (
     contextLength,
     useKvCache,
     kvCacheQuant,
-    inferenceMode
+    inferenceMode,
+    architecture,
+    concurrentRequests
   ).totalGb;
 };
 

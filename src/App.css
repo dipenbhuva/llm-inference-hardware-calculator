@@ -235,6 +235,10 @@ input[type='checkbox'] {
   margin-bottom: 1rem;
 }
 
+.section-title-spaced {
+  margin-top: 1.5rem;
+}
+
 /* KV Cache Animation */
 .kvCacheAnimate {
   overflow: hidden;

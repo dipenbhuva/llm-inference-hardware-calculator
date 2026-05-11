@@ -5,6 +5,7 @@ import {
   ModelQuantization,
   KvCacheQuantization,
   InferenceMode,
+  ModelArchitecture,
 } from './types';
 import {
   calculateHardwareRecommendation,
@@ -34,6 +35,12 @@ function App() {
 
   // Misc
   const [contextLength, setContextLength] = useState<number>(4096);
+  const [layers, setLayers] = useState<number>(80);
+  const [hiddenSize, setHiddenSize] = useState<number>(8192);
+  const [attentionHeads, setAttentionHeads] = useState<number>(64);
+  const [kvHeads, setKvHeads] = useState<number>(8);
+  const [headDim, setHeadDim] = useState<number>(128);
+  const [concurrentRequests, setConcurrentRequests] = useState<number>(1);
   const [memoryMode, setMemoryMode] = useState<MemoryMode>('DISCRETE_GPU');
   const [systemMemory, setSystemMemory] = useState<number>(128); // in GB
   const [gpuVram, setGpuVram] = useState<number>(24); // in GB, default 24GB
@@ -55,6 +62,14 @@ function App() {
   // -----------------------------------
   // 3. CALCULATE & RENDER
   // -----------------------------------
+  const modelArchitecture: ModelArchitecture = {
+    layers,
+    hiddenSize,
+    attentionHeads,
+    kvHeads,
+    headDim,
+  };
+
   const recommendation = calculateHardwareRecommendation(
     params,
     modelQuant,
@@ -64,7 +79,9 @@ function App() {
     memoryMode,
     systemMemory,
     gpuVram,
-    inferenceMode
+    inferenceMode,
+    modelArchitecture,
+    concurrentRequests
   );
 
   const memoryBreakdown = calculateMemoryBreakdown(
@@ -73,7 +90,9 @@ function App() {
     contextLength,
     useKvCache,
     kvCacheQuant,
-    inferenceMode
+    inferenceMode,
+    modelArchitecture,
+    concurrentRequests
   );
 
   const onDiskSize = calculateOnDiskSize(params, modelQuant);
@@ -162,6 +181,109 @@ function App() {
               step={128}
               value={contextLength}
               onChange={(e) => setContextLength(Number(e.target.value))}
+            />
+          </div>
+
+          <h2 className="section-title section-title-spaced">
+            Model Architecture
+          </h2>
+
+          <label className="label-range">
+            Layers:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={256}
+              value={layers}
+              onChange={(e) => handleInputChange(e, setLayers)}
+            />
+            <Tooltip text="Number of transformer layers. KV cache stores key/value tensors for each layer.">
+              i
+            </Tooltip>
+          </label>
+
+          <label className="label-range">
+            Hidden Size:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={65536}
+              value={hiddenSize}
+              onChange={(e) => handleInputChange(e, setHiddenSize)}
+            />
+            <Tooltip text="Model hidden dimension. It is shown for architecture completeness and later preset validation.">
+              i
+            </Tooltip>
+          </label>
+
+          <label className="label-range">
+            Attention Heads:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={512}
+              value={attentionHeads}
+              onChange={(e) => handleInputChange(e, setAttentionHeads)}
+            />
+            <Tooltip text="Total attention heads. Some models use fewer KV heads than attention heads with grouped-query attention.">
+              i
+            </Tooltip>
+          </label>
+
+          <label className="label-range">
+            KV Heads:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={512}
+              value={kvHeads}
+              onChange={(e) => handleInputChange(e, setKvHeads)}
+            />
+            <Tooltip text="Number of key/value heads. KV cache memory uses this value, not necessarily total attention heads.">
+              i
+            </Tooltip>
+          </label>
+
+          <label className="label-range">
+            Head Dimension:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={1024}
+              value={headDim}
+              onChange={(e) => handleInputChange(e, setHeadDim)}
+            />
+            <Tooltip text="Dimension of each attention head. For many models this is hidden size divided by attention heads.">
+              i
+            </Tooltip>
+          </label>
+
+          <label className="label-range">
+            Concurrent Requests:
+            <input
+              className="text-input-group"
+              type="number"
+              min={1}
+              max={512}
+              value={concurrentRequests}
+              onChange={(e) => handleInputChange(e, setConcurrentRequests)}
+            />
+            <Tooltip text="Number of simultaneous requests sharing KV cache memory at the selected context length.">
+              i
+            </Tooltip>
+          </label>
+          <div className="slider-input-group">
+            <input
+              type="range"
+              min={1}
+              max={128}
+              value={concurrentRequests}
+              onChange={(e) => setConcurrentRequests(Number(e.target.value))}
             />
           </div>
 

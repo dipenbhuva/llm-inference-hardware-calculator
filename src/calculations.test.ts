@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateHardwareRecommendation,
+  calculateKvCacheMemoryGb,
   calculateMemoryBreakdown,
   calculateOnDiskSize,
   calculateRequiredVram,
@@ -149,6 +150,119 @@ describe('calculateMemoryBreakdown', () => {
 
     expect(bulk.activationGb).toBeGreaterThan(incremental.activationGb);
     expect(bulk.totalGb).toBeGreaterThan(incremental.totalGb);
+  });
+
+  it('uses architecture-level KV cache math when architecture is provided', () => {
+    const breakdown = calculateMemoryBreakdown(
+      7,
+      'Q4',
+      4096,
+      true,
+      'F16',
+      'incremental',
+      {
+        layers: 32,
+        hiddenSize: 4096,
+        attentionHeads: 32,
+        kvHeads: 8,
+        headDim: 128,
+      },
+      1
+    );
+
+    expect(breakdown.kvCacheGb).toBeCloseTo(0.536870912, 5);
+  });
+});
+
+describe('calculateKvCacheMemoryGb', () => {
+  const architecture = {
+    layers: 32,
+    hiddenSize: 4096,
+    attentionHeads: 32,
+    kvHeads: 8,
+    headDim: 128,
+  };
+
+  it('calculates KV cache from layers, KV heads, head dimension, dtype, context, and concurrency', () => {
+    expect(
+      calculateKvCacheMemoryGb({
+        architecture,
+        contextLength: 4096,
+        kvCacheQuant: 'F16',
+        concurrentRequests: 1,
+      })
+    ).toBeCloseTo(0.536870912, 5);
+  });
+
+  it('scales linearly with context length', () => {
+    const shortContext = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+    const longContext = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 8192,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+
+    expect(longContext).toBeCloseTo(shortContext * 2, 5);
+  });
+
+  it('scales linearly with concurrent requests', () => {
+    const singleRequest = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+    const twoRequests = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 2,
+    });
+
+    expect(twoRequests).toBeCloseTo(singleRequest * 2, 5);
+  });
+
+  it('uses KV heads rather than total attention heads', () => {
+    const gqaModel = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+    const fullAttentionKvModel = calculateKvCacheMemoryGb({
+      architecture: {
+        ...architecture,
+        kvHeads: architecture.attentionHeads,
+      },
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+
+    expect(fullAttentionKvModel).toBeCloseTo(gqaModel * 4, 5);
+  });
+
+  it('scales with KV cache quantization bytes per element', () => {
+    const fp16 = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'F16',
+      concurrentRequests: 1,
+    });
+    const q8 = calculateKvCacheMemoryGb({
+      architecture,
+      contextLength: 4096,
+      kvCacheQuant: 'Q8',
+      concurrentRequests: 1,
+    });
+
+    expect(q8).toBeCloseTo(fp16 / 2, 5);
   });
 });
 

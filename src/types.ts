@@ -29,6 +29,15 @@ export interface MemoryBreakdown {
   totalGb: number;
 }
 
+/** Transformer architecture fields needed for architecture-level KV cache math. */
+export interface ModelArchitecture {
+  layers: number;
+  hiddenSize: number;
+  attentionHeads: number;
+  kvHeads: number;
+  headDim: number;
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'

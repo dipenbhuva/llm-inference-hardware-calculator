@@ -2,6 +2,7 @@ import {
   InferenceMode,
   KvCacheQuantization,
   MemoryMode,
+  ModelArchitecture,
   ModelQuantization,
   Recommendation,
 } from './types';
@@ -10,6 +11,7 @@ import {
   getModelQuantFactor,
 } from './calculations/memory';
 
+export { calculateKvCacheMemoryGb } from './calculations/kvCache';
 export {
   calculateMemoryBreakdown,
   calculateOnDiskSize,
@@ -35,7 +37,9 @@ export const calculateHardwareRecommendation = (
   memoryMode: MemoryMode,
   systemMemory: number,
   gpuVram: number,
-  inferenceMode: InferenceMode
+  inferenceMode: InferenceMode,
+  architecture?: ModelArchitecture,
+  concurrentRequests = 1
 ): Recommendation => {
   const requiredVram = calculateRequiredVram(
     params,
@@ -43,7 +47,9 @@ export const calculateHardwareRecommendation = (
     contextLength,
     useKvCache,
     kvCacheQuant,
-    inferenceMode
+    inferenceMode,
+    architecture,
+    concurrentRequests
   );
 
   // Adjust system RAM calculation to include additional bulk activation memory.
