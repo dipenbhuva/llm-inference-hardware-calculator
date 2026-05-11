@@ -120,7 +120,7 @@ Calculation modules should stay framework-free TypeScript so they can be unit te
 | L07 | Diagnostics/OOM Lab | Not Started | `src/calculations/recommendations.ts`, `src/components/DiagnosticsPanel.tsx` | Unit tests, runtime test RT-L07 |
 | L08 | Tensor Parallel vs Replicas | Not Started | `src/calculations/servingCapacity.ts`, `src/types.ts` | Unit tests, runtime test RT-L08 |
 | L09 | Student Lab Guides | Not Started | `labs/*.md`, `README.md` | Docs review, runtime test RT-L09 |
-| L10 | Test Harness | Not Started | `package.json`, `vitest.config.ts`, test files | `npm run test`, runtime test RT-L10 |
+| L10 | Test Harness | Done | `package.json`, `vitest.config.ts`, test files | `npm run test`, runtime test RT-L10 |
 
 ## Lab Details
 
