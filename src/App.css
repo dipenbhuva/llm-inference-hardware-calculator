@@ -188,6 +188,48 @@ input[type='checkbox'] {
   font-weight: bold;
 }
 
+.memory-breakdown {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background-color: var(--bg-color);
+}
+
+.memory-breakdown h3 {
+  margin: 0 0 0.75rem 0;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+.memory-breakdown dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.memory-breakdown dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.memory-breakdown dt {
+  color: var(--secondary-color);
+}
+
+.memory-breakdown dd {
+  margin: 0;
+  color: var(--text-color);
+  font-weight: 700;
+  text-align: right;
+}
+
+.memory-breakdown-total {
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.45rem;
+}
+
 .section-title {
   margin-top: 0;
   margin-bottom: 1rem;

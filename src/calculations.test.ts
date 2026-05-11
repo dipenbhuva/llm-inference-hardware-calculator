@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   calculateHardwareRecommendation,
+  calculateMemoryBreakdown,
   calculateOnDiskSize,
   calculateRequiredVram,
   getKvCacheQuantFactor,
@@ -86,6 +87,68 @@ describe('calculateRequiredVram', () => {
     );
 
     expect(bulk).toBeGreaterThan(incremental);
+  });
+});
+
+describe('calculateMemoryBreakdown', () => {
+  it('returns visible components that add up to the total', () => {
+    const breakdown = calculateMemoryBreakdown(
+      7,
+      'F16',
+      2048,
+      false,
+      'F16',
+      'incremental'
+    );
+
+    expect(breakdown.modelWeightsGb).toBeCloseTo(14, 5);
+    expect(breakdown.kvCacheGb).toBe(0);
+    expect(breakdown.activationGb).toBe(0);
+    expect(breakdown.runtimeOverheadGb).toBeCloseTo(1.4, 5);
+    expect(breakdown.totalGb).toBeCloseTo(
+      breakdown.modelWeightsGb +
+        breakdown.kvCacheGb +
+        breakdown.activationGb +
+        breakdown.runtimeOverheadGb,
+      5
+    );
+  });
+
+  it('shows KV cache as its own component when enabled', () => {
+    const breakdown = calculateMemoryBreakdown(
+      70,
+      'Q4',
+      8192,
+      true,
+      'Q4',
+      'incremental'
+    );
+
+    expect(breakdown.modelWeightsGb).toBeCloseTo(35, 5);
+    expect(breakdown.kvCacheGb).toBeGreaterThan(0);
+    expect(breakdown.activationGb).toBe(0);
+  });
+
+  it('shows activation memory as its own component in bulk mode', () => {
+    const incremental = calculateMemoryBreakdown(
+      13,
+      'Q4',
+      4096,
+      false,
+      'Q4',
+      'incremental'
+    );
+    const bulk = calculateMemoryBreakdown(
+      13,
+      'Q4',
+      4096,
+      false,
+      'Q4',
+      'bulk'
+    );
+
+    expect(bulk.activationGb).toBeGreaterThan(incremental.activationGb);
+    expect(bulk.totalGb).toBeGreaterThan(incremental.totalGb);
   });
 });
 

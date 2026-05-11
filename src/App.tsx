@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import './App.css';
-import { MemoryMode, ModelQuantization, KvCacheQuantization } from './types';
+import {
+  MemoryMode,
+  ModelQuantization,
+  KvCacheQuantization,
+  InferenceMode,
+} from './types';
 import {
   calculateHardwareRecommendation,
+  calculateMemoryBreakdown,
   calculateOnDiskSize,
 } from './calculations';
 import { Tooltip } from './components/Tooltip';
 import { ThemeToggle } from './components/ThemeToggle';
+import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
 
 function App() {
   // -----------------------------------
@@ -22,9 +29,8 @@ function App() {
   const [kvCacheQuant, setKvCacheQuant] = useState<KvCacheQuantization>('Q4'); // Changed from 'F16' to 'Q4'
 
   // Inference mode
-  const [inferenceMode, setInferenceMode] = useState<'incremental' | 'bulk'>(
-    'incremental'
-  );
+  const [inferenceMode, setInferenceMode] =
+    useState<InferenceMode>('incremental');
 
   // Misc
   const [contextLength, setContextLength] = useState<number>(4096);
@@ -58,6 +64,15 @@ function App() {
     memoryMode,
     systemMemory,
     gpuVram,
+    inferenceMode
+  );
+
+  const memoryBreakdown = calculateMemoryBreakdown(
+    params,
+    modelQuant,
+    contextLength,
+    useKvCache,
+    kvCacheQuant,
     inferenceMode
   );
 
@@ -160,7 +175,7 @@ function App() {
           <select
             value={inferenceMode}
             onChange={(e) =>
-              setInferenceMode(e.target.value as 'incremental' | 'bulk')
+              setInferenceMode(e.target.value as InferenceMode)
             }
           >
             <option value="incremental">Incremental (streaming)</option>
@@ -285,6 +300,8 @@ function App() {
           <p>
             <strong>GPU Config:</strong> {recommendation.gpuType}
           </p>
+
+          <MemoryBreakdownPanel breakdown={memoryBreakdown} />
 
           {recommendation.gpusRequired > 1 && (
             <p>

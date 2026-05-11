@@ -1,128 +1,22 @@
 import {
+  InferenceMode,
+  KvCacheQuantization,
   MemoryMode,
   ModelQuantization,
-  KvCacheQuantization,
   Recommendation,
 } from './types';
+import {
+  calculateRequiredVram,
+  getModelQuantFactor,
+} from './calculations/memory';
 
-type InferenceMode = 'incremental' | 'bulk';
-
-/**
- * Returns GB factor for a 1B param model based on quantization.
- * This function converts the quantization setting into an estimate of how many
- * gigabytes are required per 1B parameters. For example, FP16 (F16) uses 2GB per 1B.
- */
-export const getModelQuantFactor = (q: ModelQuantization): number => {
-  switch (q) {
-    case 'F32':
-      return 4.0;
-    case 'F16':
-      return 2.0;
-    case 'Q8':
-      return 1.0;
-    case 'Q6':
-      return 0.75;
-    case 'Q5':
-      return 0.625;
-    case 'Q4':
-      return 0.5;
-    case 'Q3':
-      return 0.375;
-    case 'Q2':
-      return 0.25;
-    case 'GPTQ':
-      return 0.4; // approximate factor for GPTQ quantization
-    case 'AWQ':
-      return 0.35; // approximate factor for AWQ quantization
-    default:
-      return 1.0;
-  }
-};
-
-/**
- * Returns GB factor for KV cache usage (per 1B params), depending on quantization.
- * This is used to adjust the additional memory required when KV caching is enabled.
- */
-export const getKvCacheQuantFactor = (k: KvCacheQuantization): number => {
-  switch (k) {
-    case 'F32':
-      return 4.0;
-    case 'F16':
-      return 2.0;
-    case 'Q8':
-      return 1.0;
-    case 'Q5':
-      return 0.625;
-    case 'Q4':
-      return 0.5;
-    default:
-      return 1.0;
-  }
-};
-
-/**
- * Calculate VRAM requirement (GB) for single-user inference,
- * distinguishing between incremental and bulk forward pass.
- *
- * Changes made:
- *  - Removed context scaling from the base model memory since model weights are fixed.
- *  - Added context-based memory estimation separately:
- *      * Incremental mode only adds KV cache overhead.
- *      * Bulk mode adds a larger overhead for storing full activations.
- *  - Included a further addition if KV cache is enabled in bulk mode.
- *  - Finally, an overhead factor of ~10% is applied for fragmentation and extra buffers.
- */
-export const calculateRequiredVram = (
-  params: number, // number of model parameters in *billions*
-  modelQuant: ModelQuantization,
-  contextLength: number,
-  useKvCache: boolean,
-  kvCacheQuant: KvCacheQuantization,
-  inferenceMode: InferenceMode
-): number => {
-  // 1) Base model memory is independent of context length.
-  const modelFactor = getModelQuantFactor(modelQuant);
-  const baseModelMem = params * modelFactor; // e.g. 8B params * 2.0 = 16GB for an 8B FP16 model
-
-  // 2) Estimate additional memory needed for context processing.
-  let contextMem = 0;
-
-  if (inferenceMode === 'incremental') {
-    // Incremental/streaming decoding:
-    // Memory usage is primarily driven by the KV cache if enabled.
-    if (useKvCache) {
-      // alphaAt2048 represents the fraction of base model memory used by the KV cache at 2048 tokens.
-      const alphaAt2048 = 0.2;
-      const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
-      // Scale KV memory linearly with context length relative to 2048 tokens.
-      const kvScale = contextLength / 2048;
-      contextMem = baseModelMem * alphaAt2048 * kvScale * kvFactor;
-    }
-    // When KV cache is off, minimal extra memory is required for incremental decoding.
-  } else {
-    // Bulk forward pass:
-    // In bulk mode, the entire context is processed at once, leading to a larger memory footprint.
-    // We use a larger alpha value (bulkAlphaAt2048) to represent the higher overhead.
-    const bulkAlphaAt2048 = 0.5; // Rough estimate for full activation storage at 2048 tokens.
-    const bulkScale = contextLength / 2048;
-    contextMem = baseModelMem * bulkAlphaAt2048 * bulkScale;
-
-    // If KV cache is enabled, add extra overhead (though in a full forward pass, it might be less effective).
-    if (useKvCache) {
-      const kvFactor = getKvCacheQuantFactor(kvCacheQuant);
-      contextMem += baseModelMem * 0.1 * kvFactor * bulkScale;
-    }
-  }
-
-  // 3) Total VRAM = base model memory + context-dependent memory.
-  let totalVram = baseModelMem + contextMem;
-
-  // 4) Add an overhead factor (~10%) to account for fragmentation and extra buffers.
-  const overheadFactor = 1.1;
-  totalVram *= overheadFactor;
-
-  return totalVram;
-};
+export {
+  calculateMemoryBreakdown,
+  calculateOnDiskSize,
+  calculateRequiredVram,
+  getKvCacheQuantFactor,
+  getModelQuantFactor,
+} from './calculations/memory';
 
 /**
  * Calculate hardware recommendation based on model parameters and system configuration.
@@ -193,23 +87,4 @@ export const calculateHardwareRecommendation = (
     systemRamNeeded,
     gpusRequired,
   };
-};
-
-/**
- * Estimate on-disk model size.
- *
- * Changes made:
- *  - Instead of directly returning the product of parameters and the quantization factor,
- *    we now convert the effective factor (GB per 1B params) to bits per parameter,
- *    compute total bits, then convert to bytes and finally to gigabytes.
- */
-export const calculateOnDiskSize = (
-  params: number,
-  modelQuant: ModelQuantization
-): number => {
-  const modelFactor = getModelQuantFactor(modelQuant);
-  // Convert GB per 1B params to bits per parameter.
-  const bitsPerParam = modelFactor * 8;
-  const totalBits = params * 1e9 * bitsPerParam;
-  return totalBits / 8 / 1e9; // Convert bytes to GB
 };

@@ -17,6 +17,18 @@ export type ModelQuantization =
 /** KV cache quantization: F32, F16, Q8, Q5, Q4. */
 export type KvCacheQuantization = 'F32' | 'F16' | 'Q8' | 'Q5' | 'Q4';
 
+/** Inference style: token-by-token generation or full-context pass. */
+export type InferenceMode = 'incremental' | 'bulk';
+
+/** VRAM estimate split into visible components. */
+export interface MemoryBreakdown {
+  modelWeightsGb: number;
+  kvCacheGb: number;
+  activationGb: number;
+  runtimeOverheadGb: number;
+  totalGb: number;
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'
