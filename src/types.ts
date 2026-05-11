@@ -54,6 +54,29 @@ export interface GpuPreset {
   class: 'consumer' | 'datacenter' | 'custom';
 }
 
+/** Serving settings used to estimate vLLM-style model fit and KV capacity. */
+export interface ServingConfig {
+  gpuCount: number;
+  gpuMemoryUtilization: number;
+  maxModelLen: number;
+  tensorParallelSize: number;
+  targetConcurrentRequests: number;
+}
+
+/** Capacity result for one tensor-parallel model replica. */
+export interface ServingCapacity {
+  usableGpuMemoryGb: number;
+  usableTotalMemoryGb: number;
+  modelWeightsGb: number;
+  modelWeightsPerGpuGb: number;
+  remainingKvCacheMemoryGb: number;
+  kvBytesPerToken: number;
+  maxKvTokens: number;
+  maxConcurrentRequests: number;
+  weightsFit: boolean;
+  targetConcurrencyFits: boolean;
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'

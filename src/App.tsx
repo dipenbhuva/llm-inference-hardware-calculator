@@ -11,10 +11,12 @@ import {
   calculateHardwareRecommendation,
   calculateMemoryBreakdown,
   calculateOnDiskSize,
+  calculateServingCapacity,
 } from './calculations';
 import { Tooltip } from './components/Tooltip';
 import { ThemeToggle } from './components/ThemeToggle';
 import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
+import { ServingCapacityPanel } from './components/ServingCapacityPanel';
 import {
   CUSTOM_MODEL_PRESET_ID,
   getModelPresetById,
@@ -58,6 +60,11 @@ function App() {
   const [systemMemory, setSystemMemory] = useState<number>(128); // in GB
   const [gpuPresetId, setGpuPresetId] = useState<string>('rtx-4090-24gb');
   const [gpuVram, setGpuVram] = useState<number>(24); // in GB, default 24GB
+  const [gpuCount, setGpuCount] = useState<number>(1);
+  const [gpuMemoryUtilization, setGpuMemoryUtilization] =
+    useState<number>(0.9);
+  const [maxModelLen, setMaxModelLen] = useState<number>(4096);
+  const [tensorParallelSize, setTensorParallelSize] = useState<number>(1);
 
   // -----------------------------------
   // 2. HELPER FUNCTIONS
@@ -86,6 +93,7 @@ function App() {
 
     setParams(preset.paramsBillion);
     setContextLength(preset.defaultContextLength);
+    setMaxModelLen(preset.defaultContextLength);
     setLayers(preset.layers);
     setHiddenSize(preset.hiddenSize);
     setAttentionHeads(preset.attentionHeads);
@@ -140,6 +148,21 @@ function App() {
     modelArchitecture,
     concurrentRequests
   );
+
+  const servingCapacity = calculateServingCapacity({
+    params,
+    modelQuant,
+    kvCacheQuant,
+    gpuVram,
+    architecture: modelArchitecture,
+    servingConfig: {
+      gpuCount,
+      gpuMemoryUtilization,
+      maxModelLen,
+      tensorParallelSize,
+      targetConcurrentRequests: concurrentRequests,
+    },
+  });
 
   const onDiskSize = calculateOnDiskSize(params, modelQuant);
 
@@ -455,6 +478,80 @@ function App() {
             </>
           )}
 
+          {memoryMode === 'DISCRETE_GPU' && (
+            <>
+              <h2 className="section-title section-title-spaced">
+                Serving Configuration
+              </h2>
+
+              <label className="label-range">
+                GPU Count:
+                <input
+                  className="text-input-group"
+                  type="number"
+                  min={1}
+                  max={128}
+                  value={gpuCount}
+                  onChange={(e) => handleInputChange(e, setGpuCount)}
+                />
+                <Tooltip text="Total GPUs available for one serving deployment. Tensor parallel size cannot use more GPUs than this.">
+                  i
+                </Tooltip>
+              </label>
+
+              <label className="label-range">
+                Tensor Parallel Size:
+                <input
+                  className="text-input-group"
+                  type="number"
+                  min={1}
+                  max={128}
+                  value={tensorParallelSize}
+                  onChange={(e) =>
+                    handleInputChange(e, setTensorParallelSize)
+                  }
+                />
+                <Tooltip text="Number of GPUs used to split one model replica. Higher values reduce model weight memory per GPU.">
+                  i
+                </Tooltip>
+              </label>
+
+              <label className="label-range">
+                GPU Memory Utilization:
+                <input
+                  className="text-input-group"
+                  type="number"
+                  min={0.1}
+                  max={1}
+                  step={0.05}
+                  value={gpuMemoryUtilization}
+                  onChange={(e) =>
+                    handleInputChange(e, setGpuMemoryUtilization)
+                  }
+                />
+                <Tooltip text="Fraction of each GPU's VRAM available to the model executor, similar to vLLM's gpu-memory-utilization setting.">
+                  i
+                </Tooltip>
+              </label>
+
+              <label className="label-range">
+                Max Model Length:
+                <input
+                  className="text-input-group"
+                  type="number"
+                  min={128}
+                  max={131072}
+                  step={128}
+                  value={maxModelLen}
+                  onChange={(e) => handleInputChange(e, setMaxModelLen)}
+                />
+                <Tooltip text="Maximum tokens per request for serving capacity. Higher values reduce maximum concurrent requests.">
+                  i
+                </Tooltip>
+              </label>
+            </>
+          )}
+
           <label className="label-range">
             System Memory (GB):
             <input
@@ -498,6 +595,10 @@ function App() {
           </p>
 
           <MemoryBreakdownPanel breakdown={memoryBreakdown} />
+
+          {memoryMode === 'DISCRETE_GPU' && (
+            <ServingCapacityPanel capacity={servingCapacity} />
+          )}
 
           {recommendation.gpusRequired > 1 && (
             <p>

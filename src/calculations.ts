@@ -12,6 +12,7 @@ import {
 } from './calculations/memory';
 
 export { calculateKvCacheMemoryGb } from './calculations/kvCache';
+export { calculateServingCapacity } from './calculations/servingCapacity';
 export {
   calculateMemoryBreakdown,
   calculateOnDiskSize,

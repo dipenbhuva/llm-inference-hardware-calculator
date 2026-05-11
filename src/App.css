@@ -188,7 +188,8 @@ input[type='checkbox'] {
   font-weight: bold;
 }
 
-.memory-breakdown {
+.memory-breakdown,
+.serving-capacity {
   margin: 1rem 0;
   padding: 0.75rem;
   border: 1px solid var(--card-border);
@@ -196,29 +197,34 @@ input[type='checkbox'] {
   background-color: var(--bg-color);
 }
 
-.memory-breakdown h3 {
+.memory-breakdown h3,
+.serving-capacity h3 {
   margin: 0 0 0.75rem 0;
   color: var(--primary-color);
   font-size: 1rem;
 }
 
-.memory-breakdown dl {
+.memory-breakdown dl,
+.serving-capacity dl {
   display: grid;
   gap: 0.45rem;
   margin: 0;
 }
 
-.memory-breakdown dl > div {
+.memory-breakdown dl > div,
+.serving-capacity dl > div {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.memory-breakdown dt {
+.memory-breakdown dt,
+.serving-capacity dt {
   color: var(--secondary-color);
 }
 
-.memory-breakdown dd {
+.memory-breakdown dd,
+.serving-capacity dd {
   margin: 0;
   color: var(--text-color);
   font-weight: 700;
@@ -228,6 +234,19 @@ input[type='checkbox'] {
 .memory-breakdown-total {
   border-top: 1px solid var(--card-border);
   padding-top: 0.45rem;
+}
+
+.capacity-status {
+  margin: 0.75rem 0 0 0;
+  font-weight: 700;
+}
+
+.capacity-status.pass {
+  color: green;
+}
+
+.capacity-status.fail {
+  color: red;
 }
 
 .section-title {

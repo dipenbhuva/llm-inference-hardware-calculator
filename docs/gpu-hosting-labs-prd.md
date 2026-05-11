@@ -115,7 +115,7 @@ Calculation modules should stay framework-free TypeScript so they can be unit te
 | L02 | Real KV Cache Math | Done | `src/calculations/kvCache.ts`, `src/types.ts`, `src/App.tsx` | Unit tests, runtime test RT-L02 |
 | L03 | Model Presets | Done | `src/data/modelPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L03 |
 | L04 | GPU Presets | Done | `src/data/gpuPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L04 |
-| L05 | vLLM Fit Mode | Not Started | `src/calculations/servingCapacity.ts`, `src/components/ServingCapacityPanel.tsx` | Unit tests, runtime test RT-L05 |
+| L05 | vLLM Fit Mode | Done | `src/calculations/servingCapacity.ts`, `src/components/ServingCapacityPanel.tsx` | Unit tests, runtime test RT-L05 |
 | L06 | Serving Command Generator | Not Started | `src/components/ServingCommandPanel.tsx`, `src/calculations/recommendations.ts` | String tests, runtime test RT-L06 |
 | L07 | Diagnostics/OOM Lab | Not Started | `src/calculations/recommendations.ts`, `src/components/DiagnosticsPanel.tsx` | Unit tests, runtime test RT-L07 |
 | L08 | Tensor Parallel vs Replicas | Not Started | `src/calculations/servingCapacity.ts`, `src/types.ts` | Unit tests, runtime test RT-L08 |
