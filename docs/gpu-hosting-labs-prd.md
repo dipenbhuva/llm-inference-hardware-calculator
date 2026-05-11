@@ -113,7 +113,7 @@ Calculation modules should stay framework-free TypeScript so they can be unit te
 | --- | --- | --- | --- | --- |
 | L01 | Memory Breakdown | Done | `src/calculations/memory.ts`, `src/components/MemoryBreakdownPanel.tsx`, `src/types.ts` | Unit tests, runtime test RT-L01 |
 | L02 | Real KV Cache Math | Done | `src/calculations/kvCache.ts`, `src/types.ts`, `src/App.tsx` | Unit tests, runtime test RT-L02 |
-| L03 | Model Presets | Not Started | `src/data/modelPresets.ts`, `src/components/ModelConfigPanel.tsx` | Unit tests, runtime test RT-L03 |
+| L03 | Model Presets | Done | `src/data/modelPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L03 |
 | L04 | GPU Presets | Not Started | `src/data/gpuPresets.ts`, `src/components/GpuConfigPanel.tsx` | Unit tests, runtime test RT-L04 |
 | L05 | vLLM Fit Mode | Not Started | `src/calculations/servingCapacity.ts`, `src/components/ServingCapacityPanel.tsx` | Unit tests, runtime test RT-L05 |
 | L06 | Serving Command Generator | Not Started | `src/components/ServingCommandPanel.tsx`, `src/calculations/recommendations.ts` | String tests, runtime test RT-L06 |

@@ -15,6 +15,11 @@ import {
 import { Tooltip } from './components/Tooltip';
 import { ThemeToggle } from './components/ThemeToggle';
 import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
+import {
+  CUSTOM_MODEL_PRESET_ID,
+  getModelPresetById,
+  modelPresets,
+} from './data/modelPresets';
 
 function App() {
   // -----------------------------------
@@ -22,6 +27,9 @@ function App() {
   // -----------------------------------
 
   // Model config
+  const [modelPresetId, setModelPresetId] = useState<string>(
+    CUSTOM_MODEL_PRESET_ID
+  );
   const [params, setParams] = useState<number>(65); // Billions of parameters
   const [modelQuant, setModelQuant] = useState<ModelQuantization>('Q4');
 
@@ -57,6 +65,26 @@ function App() {
     if (!isNaN(newValue)) {
       setter(newValue);
     }
+  };
+
+  const handleModelPresetChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const presetId = event.target.value;
+    setModelPresetId(presetId);
+
+    const preset = getModelPresetById(presetId);
+    if (!preset) {
+      return;
+    }
+
+    setParams(preset.paramsBillion);
+    setContextLength(preset.defaultContextLength);
+    setLayers(preset.layers);
+    setHiddenSize(preset.hiddenSize);
+    setAttentionHeads(preset.attentionHeads);
+    setKvHeads(preset.kvHeads);
+    setHeadDim(preset.headDim);
   };
 
   // -----------------------------------
@@ -111,6 +139,21 @@ function App() {
         {/* Left Panel: Inputs */}
         <div className="input-panel">
           <h2 className="section-title">Model Configuration</h2>
+
+          <label className="label-range">
+            Model Preset:
+            <Tooltip text="Optional starting point for common model sizes. Presets populate parameter count and architecture fields.">
+              i
+            </Tooltip>
+          </label>
+          <select value={modelPresetId} onChange={handleModelPresetChange}>
+            <option value={CUSTOM_MODEL_PRESET_ID}>Custom model</option>
+            {modelPresets.map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.name}
+              </option>
+            ))}
+          </select>
 
           <label className="label-range">
             Number of Parameters (Billions):

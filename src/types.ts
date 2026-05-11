@@ -38,6 +38,14 @@ export interface ModelArchitecture {
   headDim: number;
 }
 
+/** Selectable model architecture preset. */
+export interface ModelPreset extends ModelArchitecture {
+  id: string;
+  name: string;
+  paramsBillion: number;
+  defaultContextLength: number;
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'
