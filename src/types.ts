@@ -46,6 +46,14 @@ export interface ModelPreset extends ModelArchitecture {
   defaultContextLength: number;
 }
 
+/** Selectable GPU preset for discrete inference hardware sizing. */
+export interface GpuPreset {
+  id: string;
+  name: string;
+  vramGb: number;
+  class: 'consumer' | 'datacenter' | 'custom';
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'

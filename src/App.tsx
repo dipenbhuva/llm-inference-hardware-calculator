@@ -20,6 +20,11 @@ import {
   getModelPresetById,
   modelPresets,
 } from './data/modelPresets';
+import {
+  CUSTOM_GPU_PRESET_ID,
+  getGpuPresetById,
+  gpuPresets,
+} from './data/gpuPresets';
 
 function App() {
   // -----------------------------------
@@ -51,6 +56,7 @@ function App() {
   const [concurrentRequests, setConcurrentRequests] = useState<number>(1);
   const [memoryMode, setMemoryMode] = useState<MemoryMode>('DISCRETE_GPU');
   const [systemMemory, setSystemMemory] = useState<number>(128); // in GB
+  const [gpuPresetId, setGpuPresetId] = useState<string>('rtx-4090-24gb');
   const [gpuVram, setGpuVram] = useState<number>(24); // in GB, default 24GB
 
   // -----------------------------------
@@ -85,6 +91,18 @@ function App() {
     setAttentionHeads(preset.attentionHeads);
     setKvHeads(preset.kvHeads);
     setHeadDim(preset.headDim);
+  };
+
+  const handleGpuPresetChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const presetId = event.target.value;
+    setGpuPresetId(presetId);
+
+    const preset = getGpuPresetById(presetId);
+    if (preset) {
+      setGpuVram(preset.vramGb);
+    }
   };
 
   // -----------------------------------
@@ -406,21 +424,34 @@ function App() {
 
           {memoryMode === 'DISCRETE_GPU' && (
             <>
-              <label className="label-range">GPU VRAM (GB):</label>
+              <label className="label-range">GPU Preset:</label>
               <select
-                value={gpuVram}
-                onChange={(e) => setGpuVram(Number(e.target.value))}
+                value={gpuPresetId}
+                onChange={handleGpuPresetChange}
               >
-                <option value={8}>8</option>
-                <option value={12}>12</option>
-                <option value={16}>16</option>
-                <option value={20}>20</option>
-                <option value={24}>24</option>
-                <option value={32}>32</option>
-                <option value={40}>40</option>
-                <option value={48}>48</option>
-                <option value={80}>80</option>
+                {gpuPresets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.name}
+                  </option>
+                ))}
+                <option value={CUSTOM_GPU_PRESET_ID}>Custom GPU</option>
               </select>
+
+              <label className="label-range">
+                GPU VRAM (GB):
+                <input
+                  className="text-input-group"
+                  type="number"
+                  min={1}
+                  max={512}
+                  value={gpuVram}
+                  disabled={gpuPresetId !== CUSTOM_GPU_PRESET_ID}
+                  onChange={(e) => handleInputChange(e, setGpuVram)}
+                />
+                <Tooltip text="Usable VRAM on each GPU. Presets lock this value; Custom GPU allows manual entry.">
+                  i
+                </Tooltip>
+              </label>
             </>
           )}
 
