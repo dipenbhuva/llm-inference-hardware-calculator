@@ -216,7 +216,11 @@ function App() {
               i
             </Tooltip>
           </label>
-          <select value={modelPresetId} onChange={handleModelPresetChange}>
+          <select
+            aria-label="Model Preset"
+            value={modelPresetId}
+            onChange={handleModelPresetChange}
+          >
             <option value={CUSTOM_MODEL_PRESET_ID}>Custom model</option>
             {modelPresets.map((preset) => (
               <option key={preset.id} value={preset.id}>
@@ -255,6 +259,7 @@ function App() {
             </Tooltip>
           </label>
           <select
+            aria-label="Model Quantization"
             value={modelQuant}
             onChange={(e) => setModelQuant(e.target.value as ModelQuantization)}
           >
@@ -408,6 +413,7 @@ function App() {
             </Tooltip>
           </label>
           <select
+            aria-label="Inference Mode"
             value={inferenceMode}
             onChange={(e) =>
               setInferenceMode(e.target.value as InferenceMode)
@@ -446,6 +452,7 @@ function App() {
               </Tooltip>
             </label>
             <select
+              aria-label="KV Cache Quantization"
               value={kvCacheQuant}
               onChange={(e) =>
                 setKvCacheQuant(e.target.value as KvCacheQuantization)
@@ -466,6 +473,7 @@ function App() {
 
           <label className="label-range">System Type:</label>
           <select
+            aria-label="System Type"
             value={memoryMode}
             onChange={(e) => setMemoryMode(e.target.value as MemoryMode)}
           >
@@ -479,6 +487,7 @@ function App() {
             <>
               <label className="label-range">GPU Preset:</label>
               <select
+                aria-label="GPU Preset"
                 value={gpuPresetId}
                 onChange={handleGpuPresetChange}
               >
