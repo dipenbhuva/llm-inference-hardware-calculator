@@ -1,4 +1,4 @@
-# Lab 06: OOM Diagnostics
+# Lab 07: OOM Diagnostics
 
 Status: Done
 

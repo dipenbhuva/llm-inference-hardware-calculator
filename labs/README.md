@@ -24,8 +24,8 @@ Lab sequence:
 3. [Model Presets](./lab-03-model-presets.md)
 4. [GPU Presets](./lab-04-gpu-presets.md)
 5. [vLLM Fit Mode](./lab-05-vllm-fit-mode.md)
-6. [OOM Diagnostics](./lab-06-oom-diagnostics.md)
-7. [Tensor Parallel vs Replicas](./lab-07-tensor-parallel-vs-replicas.md)
-8. [Serving Command Generator](./lab-08-serving-command.md)
+6. [Serving Command Generator](./lab-06-serving-command.md)
+7. [OOM Diagnostics](./lab-07-oom-diagnostics.md)
+8. [Tensor Parallel vs Replicas](./lab-08-tensor-parallel-vs-replicas.md)
 
 The PRD and status tracker live in [docs/gpu-hosting-labs-prd.md](../docs/gpu-hosting-labs-prd.md).

@@ -1,4 +1,4 @@
-# Lab 08: Serving Command Generator
+# Lab 06: Serving Command Generator
 
 Status: Done
 

@@ -1,4 +1,4 @@
-# Lab 07: Tensor Parallel vs Replicas
+# Lab 08: Tensor Parallel vs Replicas
 
 Status: Done
 
