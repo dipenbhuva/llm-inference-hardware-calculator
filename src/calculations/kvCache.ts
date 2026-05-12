@@ -35,6 +35,8 @@ const getKvCacheBytesPerElement = (kvCacheQuant: KvCacheQuantization): number =>
       return 4;
     case 'F16':
       return 2;
+    case 'FP8':
+      return 1;
     case 'Q8':
       return 1;
     case 'Q5':

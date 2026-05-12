@@ -20,6 +20,7 @@ describe('quantization factors', () => {
 
   it('returns expected KV cache memory factors', () => {
     expect(getKvCacheQuantFactor('F16')).toBe(2);
+    expect(getKvCacheQuantFactor('FP8')).toBe(1);
     expect(getKvCacheQuantFactor('Q8')).toBe(1);
     expect(getKvCacheQuantFactor('Q4')).toBe(0.5);
   });

@@ -14,8 +14,8 @@ export type ModelQuantization =
   | 'GPTQ'
   | 'AWQ';
 
-/** KV cache quantization: F32, F16, Q8, Q5, Q4. */
-export type KvCacheQuantization = 'F32' | 'F16' | 'Q8' | 'Q5' | 'Q4';
+/** KV cache quantization: F32, F16, FP8, Q8, Q5, Q4. */
+export type KvCacheQuantization = 'F32' | 'F16' | 'FP8' | 'Q8' | 'Q5' | 'Q4';
 
 /** Inference style: token-by-token generation or full-context pass. */
 export type InferenceMode = 'incremental' | 'bulk';

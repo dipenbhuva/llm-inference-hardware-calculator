@@ -191,7 +191,8 @@ input[type='checkbox'] {
 .memory-breakdown,
 .serving-capacity,
 .diagnostics-panel,
-.scaling-plan {
+.scaling-plan,
+.serving-command {
   margin: 1rem 0;
   padding: 0.75rem;
   border: 1px solid var(--card-border);
@@ -202,7 +203,8 @@ input[type='checkbox'] {
 .memory-breakdown h3,
 .serving-capacity h3,
 .diagnostics-panel h3,
-.scaling-plan h3 {
+.scaling-plan h3,
+.serving-command h3 {
   margin: 0 0 0.75rem 0;
   color: var(--primary-color);
   font-size: 1rem;
@@ -292,6 +294,23 @@ input[type='checkbox'] {
 
 .diagnostic-info {
   border-left-color: green;
+}
+
+.serving-command pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-color);
+  font-size: 0.85rem;
+}
+
+.serving-command p {
+  margin: 0.75rem 0 0 0;
+  color: var(--secondary-color);
+  font-size: 0.9rem;
 }
 
 .section-title {

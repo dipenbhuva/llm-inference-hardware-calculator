@@ -14,6 +14,7 @@ import {
   calculateOnDiskSize,
   calculateScalingPlan,
   calculateServingCapacity,
+  buildVllmServeCommand,
 } from './calculations';
 import { Tooltip } from './components/Tooltip';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -21,6 +22,7 @@ import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
 import { ServingCapacityPanel } from './components/ServingCapacityPanel';
 import { DiagnosticsPanel } from './components/DiagnosticsPanel';
 import { ScalingPlanPanel } from './components/ScalingPlanPanel';
+import { ServingCommandPanel } from './components/ServingCommandPanel';
 import {
   CUSTOM_MODEL_PRESET_ID,
   getModelPresetById,
@@ -182,6 +184,13 @@ function App() {
     gpuVram,
     architecture: modelArchitecture,
     servingConfig,
+  });
+
+  const vllmCommand = buildVllmServeCommand({
+    tensorParallelSize,
+    maxModelLen,
+    gpuMemoryUtilization,
+    kvCacheQuant,
   });
 
   const onDiskSize = calculateOnDiskSize(params, modelQuant);
@@ -444,6 +453,7 @@ function App() {
             >
               <option value="F32">F32</option>
               <option value="F16">F16</option>
+              <option value="FP8">FP8</option>
               <option value="Q8">Q8</option>
               <option value="Q5">Q5</option>
               <option value="Q4">Q4</option>
@@ -626,6 +636,13 @@ function App() {
 
           {memoryMode === 'DISCRETE_GPU' && (
             <DiagnosticsPanel diagnostics={diagnostics} />
+          )}
+
+          {memoryMode === 'DISCRETE_GPU' && (
+            <ServingCommandPanel
+              command={vllmCommand}
+              usesPlaceholderModel={true}
+            />
           )}
 
           {recommendation.gpusRequired > 1 && (

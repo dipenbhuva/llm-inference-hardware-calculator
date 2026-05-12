@@ -1,5 +1,6 @@
 import {
   type DiagnosticMessage,
+  type KvCacheQuantization,
   type ServingCapacity,
   type ServingConfig,
 } from '../types';
@@ -108,4 +109,45 @@ export const calculateDiagnostics = ({
   }
 
   return diagnostics;
+};
+
+interface VllmCommandInput {
+  modelIdentifier?: string;
+  tensorParallelSize: number;
+  maxModelLen: number;
+  gpuMemoryUtilization: number;
+  kvCacheQuant: KvCacheQuantization;
+}
+
+export const buildVllmServeCommand = ({
+  modelIdentifier = '<model-or-path>',
+  tensorParallelSize,
+  maxModelLen,
+  gpuMemoryUtilization,
+  kvCacheQuant,
+}: VllmCommandInput): string => {
+  return [
+    `vllm serve ${modelIdentifier}`,
+    `  --tensor-parallel-size ${tensorParallelSize}`,
+    `  --max-model-len ${maxModelLen}`,
+    `  --gpu-memory-utilization ${gpuMemoryUtilization.toFixed(2)}`,
+    `  --kv-cache-dtype ${getVllmKvCacheDtype(kvCacheQuant)}`,
+  ].join(' \\\n');
+};
+
+export const getVllmKvCacheDtype = (
+  kvCacheQuant: KvCacheQuantization
+): string => {
+  switch (kvCacheQuant) {
+    case 'FP8':
+    case 'Q8':
+      return 'fp8';
+    case 'F16':
+    case 'F32':
+    case 'Q5':
+    case 'Q4':
+      return 'auto';
+    default:
+      return 'auto';
+  }
 };

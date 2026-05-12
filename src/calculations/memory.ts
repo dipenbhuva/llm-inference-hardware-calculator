@@ -49,6 +49,8 @@ export const getKvCacheQuantFactor = (k: KvCacheQuantization): number => {
       return 4.0;
     case 'F16':
       return 2.0;
+    case 'FP8':
+      return 1.0;
     case 'Q8':
       return 1.0;
     case 'Q5':

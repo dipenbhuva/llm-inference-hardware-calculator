@@ -12,7 +12,11 @@ import {
 } from './calculations/memory';
 
 export { calculateKvCacheMemoryGb } from './calculations/kvCache';
-export { calculateDiagnostics } from './calculations/recommendations';
+export {
+  buildVllmServeCommand,
+  calculateDiagnostics,
+  getVllmKvCacheDtype,
+} from './calculations/recommendations';
 export {
   calculateScalingPlan,
   calculateServingCapacity,
