@@ -31,6 +31,10 @@ npm run dev
 npm run build
 ```
 
+## Labs
+
+GPU hosting labs are available in [labs/README.md](labs/README.md). They walk through memory breakdowns, KV cache math, model/GPU presets, vLLM-style fit checks, diagnostics, scaling, and serving command generation.
+
 ## Docker
 
 - to use Docker and docker compose first create a `.env` file based on the [.env.example](.env.example) and set a PORT that should be exposed
