@@ -77,6 +77,26 @@ export interface ServingCapacity {
   targetConcurrencyFits: boolean;
 }
 
+export type DiagnosticSeverity = 'info' | 'warning' | 'critical';
+
+export type DiagnosticId =
+  | 'weights_exceed_usable_vram'
+  | 'kv_cache_exceeds_remaining_vram'
+  | 'target_concurrency_exceeds_capacity'
+  | 'low_headroom'
+  | 'tensor_parallel_greater_than_gpu_count'
+  | 'invalid_gpu_memory_utilization'
+  | 'no_blocking_fit_issues';
+
+/** Data-only diagnostic for invalid or risky serving configurations. */
+export interface DiagnosticMessage {
+  id: DiagnosticId;
+  severity: DiagnosticSeverity;
+  title: string;
+  detail: string;
+  action: string;
+}
+
 /** Recommendation for final output. */
 export interface Recommendation {
   gpuType: string; // e.g., 'Single 24GB GPU' or 'Unified memory...'

@@ -8,6 +8,7 @@ import {
   ModelArchitecture,
 } from './types';
 import {
+  calculateDiagnostics,
   calculateHardwareRecommendation,
   calculateMemoryBreakdown,
   calculateOnDiskSize,
@@ -17,6 +18,7 @@ import { Tooltip } from './components/Tooltip';
 import { ThemeToggle } from './components/ThemeToggle';
 import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
 import { ServingCapacityPanel } from './components/ServingCapacityPanel';
+import { DiagnosticsPanel } from './components/DiagnosticsPanel';
 import {
   CUSTOM_MODEL_PRESET_ID,
   getModelPresetById,
@@ -149,19 +151,26 @@ function App() {
     concurrentRequests
   );
 
+  const servingConfig = {
+    gpuCount,
+    gpuMemoryUtilization,
+    maxModelLen,
+    tensorParallelSize,
+    targetConcurrentRequests: concurrentRequests,
+  };
+
   const servingCapacity = calculateServingCapacity({
     params,
     modelQuant,
     kvCacheQuant,
     gpuVram,
     architecture: modelArchitecture,
-    servingConfig: {
-      gpuCount,
-      gpuMemoryUtilization,
-      maxModelLen,
-      tensorParallelSize,
-      targetConcurrentRequests: concurrentRequests,
-    },
+    servingConfig,
+  });
+
+  const diagnostics = calculateDiagnostics({
+    capacity: servingCapacity,
+    servingConfig,
   });
 
   const onDiskSize = calculateOnDiskSize(params, modelQuant);
@@ -598,6 +607,10 @@ function App() {
 
           {memoryMode === 'DISCRETE_GPU' && (
             <ServingCapacityPanel capacity={servingCapacity} />
+          )}
+
+          {memoryMode === 'DISCRETE_GPU' && (
+            <DiagnosticsPanel diagnostics={diagnostics} />
           )}
 
           {recommendation.gpusRequired > 1 && (

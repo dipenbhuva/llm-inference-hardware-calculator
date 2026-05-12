@@ -189,7 +189,8 @@ input[type='checkbox'] {
 }
 
 .memory-breakdown,
-.serving-capacity {
+.serving-capacity,
+.diagnostics-panel {
   margin: 1rem 0;
   padding: 0.75rem;
   border: 1px solid var(--card-border);
@@ -198,7 +199,8 @@ input[type='checkbox'] {
 }
 
 .memory-breakdown h3,
-.serving-capacity h3 {
+.serving-capacity h3,
+.diagnostics-panel h3 {
   margin: 0 0 0.75rem 0;
   color: var(--primary-color);
   font-size: 1rem;
@@ -247,6 +249,43 @@ input[type='checkbox'] {
 
 .capacity-status.fail {
   color: red;
+}
+
+.diagnostics-panel ul {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.diagnostic {
+  display: grid;
+  gap: 0.2rem;
+  border-left: 4px solid var(--primary-color);
+  padding-left: 0.65rem;
+}
+
+.diagnostic strong {
+  color: var(--text-color);
+}
+
+.diagnostic span,
+.diagnostic em {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+}
+
+.diagnostic-critical {
+  border-left-color: red;
+}
+
+.diagnostic-warning {
+  border-left-color: #b26a00;
+}
+
+.diagnostic-info {
+  border-left-color: green;
 }
 
 .section-title {
