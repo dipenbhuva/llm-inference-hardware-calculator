@@ -2,6 +2,7 @@ import {
   type KvCacheQuantization,
   type ModelArchitecture,
   type ModelQuantization,
+  type ScalingPlan,
   type ServingCapacity,
   type ServingConfig,
 } from '../types';
@@ -67,5 +68,69 @@ export const calculateServingCapacity = ({
     targetConcurrencyFits:
       weightsFit &&
       maxConcurrentRequests >= servingConfig.targetConcurrentRequests,
+  };
+};
+
+export const calculateScalingPlan = ({
+  params,
+  modelQuant,
+  kvCacheQuant,
+  gpuVram,
+  architecture,
+  servingConfig,
+}: ServingCapacityInput): ScalingPlan => {
+  const usableGpuMemoryGb = gpuVram * servingConfig.gpuMemoryUtilization;
+  const modelWeightsGb = params * getModelQuantFactor(modelQuant);
+  const minimumTensorParallelSize =
+    usableGpuMemoryGb > 0
+      ? Math.max(1, Math.ceil(modelWeightsGb / usableGpuMemoryGb))
+      : Number.POSITIVE_INFINITY;
+  const canFitOneReplica = minimumTensorParallelSize <= servingConfig.gpuCount;
+  const recommendedTensorParallelSize = canFitOneReplica
+    ? minimumTensorParallelSize
+    : Math.max(1, servingConfig.gpuCount);
+
+  if (!canFitOneReplica) {
+    return {
+      minimumTensorParallelSize,
+      recommendedTensorParallelSize,
+      maxConcurrentRequestsPerReplica: 0,
+      replicasNeeded: 0,
+      totalGpusNeeded: 0,
+      canFitOneReplica,
+    };
+  }
+
+  const perReplicaCapacity = calculateServingCapacity({
+    params,
+    modelQuant,
+    kvCacheQuant,
+    gpuVram,
+    architecture,
+    servingConfig: {
+      ...servingConfig,
+      tensorParallelSize: recommendedTensorParallelSize,
+    },
+  });
+  const maxConcurrentRequestsPerReplica =
+    perReplicaCapacity.maxConcurrentRequests;
+  const replicasNeeded =
+    maxConcurrentRequestsPerReplica > 0
+      ? Math.max(
+          1,
+          Math.ceil(
+            servingConfig.targetConcurrentRequests /
+              maxConcurrentRequestsPerReplica
+          )
+        )
+      : 0;
+
+  return {
+    minimumTensorParallelSize,
+    recommendedTensorParallelSize,
+    maxConcurrentRequestsPerReplica,
+    replicasNeeded,
+    totalGpusNeeded: recommendedTensorParallelSize * replicasNeeded,
+    canFitOneReplica,
   };
 };

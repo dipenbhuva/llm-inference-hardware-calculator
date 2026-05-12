@@ -77,6 +77,16 @@ export interface ServingCapacity {
   targetConcurrencyFits: boolean;
 }
 
+/** Recommended split between tensor-parallel fit and replica-based scale. */
+export interface ScalingPlan {
+  minimumTensorParallelSize: number;
+  recommendedTensorParallelSize: number;
+  maxConcurrentRequestsPerReplica: number;
+  replicasNeeded: number;
+  totalGpusNeeded: number;
+  canFitOneReplica: boolean;
+}
+
 export type DiagnosticSeverity = 'info' | 'warning' | 'critical';
 
 export type DiagnosticId =

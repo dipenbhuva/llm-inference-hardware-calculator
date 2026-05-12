@@ -12,6 +12,7 @@ import {
   calculateHardwareRecommendation,
   calculateMemoryBreakdown,
   calculateOnDiskSize,
+  calculateScalingPlan,
   calculateServingCapacity,
 } from './calculations';
 import { Tooltip } from './components/Tooltip';
@@ -19,6 +20,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { MemoryBreakdownPanel } from './components/MemoryBreakdownPanel';
 import { ServingCapacityPanel } from './components/ServingCapacityPanel';
 import { DiagnosticsPanel } from './components/DiagnosticsPanel';
+import { ScalingPlanPanel } from './components/ScalingPlanPanel';
 import {
   CUSTOM_MODEL_PRESET_ID,
   getModelPresetById,
@@ -170,6 +172,15 @@ function App() {
 
   const diagnostics = calculateDiagnostics({
     capacity: servingCapacity,
+    servingConfig,
+  });
+
+  const scalingPlan = calculateScalingPlan({
+    params,
+    modelQuant,
+    kvCacheQuant,
+    gpuVram,
+    architecture: modelArchitecture,
     servingConfig,
   });
 
@@ -607,6 +618,10 @@ function App() {
 
           {memoryMode === 'DISCRETE_GPU' && (
             <ServingCapacityPanel capacity={servingCapacity} />
+          )}
+
+          {memoryMode === 'DISCRETE_GPU' && (
+            <ScalingPlanPanel plan={scalingPlan} />
           )}
 
           {memoryMode === 'DISCRETE_GPU' && (

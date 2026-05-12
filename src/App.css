@@ -190,7 +190,8 @@ input[type='checkbox'] {
 
 .memory-breakdown,
 .serving-capacity,
-.diagnostics-panel {
+.diagnostics-panel,
+.scaling-plan {
   margin: 1rem 0;
   padding: 0.75rem;
   border: 1px solid var(--card-border);
@@ -200,33 +201,38 @@ input[type='checkbox'] {
 
 .memory-breakdown h3,
 .serving-capacity h3,
-.diagnostics-panel h3 {
+.diagnostics-panel h3,
+.scaling-plan h3 {
   margin: 0 0 0.75rem 0;
   color: var(--primary-color);
   font-size: 1rem;
 }
 
 .memory-breakdown dl,
-.serving-capacity dl {
+.serving-capacity dl,
+.scaling-plan dl {
   display: grid;
   gap: 0.45rem;
   margin: 0;
 }
 
 .memory-breakdown dl > div,
-.serving-capacity dl > div {
+.serving-capacity dl > div,
+.scaling-plan dl > div {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
 }
 
 .memory-breakdown dt,
-.serving-capacity dt {
+.serving-capacity dt,
+.scaling-plan dt {
   color: var(--secondary-color);
 }
 
 .memory-breakdown dd,
-.serving-capacity dd {
+.serving-capacity dd,
+.scaling-plan dd {
   margin: 0;
   color: var(--text-color);
   font-weight: 700;

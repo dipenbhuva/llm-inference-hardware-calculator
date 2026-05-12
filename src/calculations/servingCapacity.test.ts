@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { calculateServingCapacity } from './servingCapacity';
+import {
+  calculateScalingPlan,
+  calculateServingCapacity,
+} from './servingCapacity';
 
 const architecture = {
   layers: 32,
@@ -90,5 +93,76 @@ describe('calculateServingCapacity', () => {
 
     expect(capacity.weightsFit).toBe(true);
     expect(capacity.targetConcurrencyFits).toBe(false);
+  });
+});
+
+describe('calculateScalingPlan', () => {
+  it('recommends tensor parallelism when the model is too large for one GPU', () => {
+    const plan = calculateScalingPlan({
+      ...baseInput,
+      params: 70,
+      modelQuant: 'F16',
+      servingConfig: {
+        ...baseInput.servingConfig,
+        gpuCount: 8,
+        tensorParallelSize: 1,
+        targetConcurrentRequests: 1,
+      },
+    });
+
+    expect(plan.canFitOneReplica).toBe(true);
+    expect(plan.recommendedTensorParallelSize).toBeGreaterThan(1);
+    expect(plan.totalGpusNeeded).toBe(plan.recommendedTensorParallelSize);
+  });
+
+  it('recommends replicas when one model fits but target concurrency is high', () => {
+    const plan = calculateScalingPlan({
+      ...baseInput,
+      servingConfig: {
+        ...baseInput.servingConfig,
+        gpuCount: 16,
+        tensorParallelSize: 1,
+        targetConcurrentRequests: 500,
+      },
+    });
+
+    expect(plan.recommendedTensorParallelSize).toBe(1);
+    expect(plan.replicasNeeded).toBeGreaterThan(1);
+    expect(plan.totalGpusNeeded).toBe(plan.replicasNeeded);
+  });
+
+  it('calculates total GPUs as tensor parallel size times replicas', () => {
+    const plan = calculateScalingPlan({
+      ...baseInput,
+      params: 70,
+      modelQuant: 'Q4',
+      servingConfig: {
+        ...baseInput.servingConfig,
+        gpuCount: 16,
+        tensorParallelSize: 1,
+        targetConcurrentRequests: 500,
+      },
+    });
+
+    expect(plan.totalGpusNeeded).toBe(
+      plan.recommendedTensorParallelSize * plan.replicasNeeded
+    );
+  });
+
+  it('marks one replica as not feasible when there are too few GPUs', () => {
+    const plan = calculateScalingPlan({
+      ...baseInput,
+      params: 70,
+      modelQuant: 'F16',
+      servingConfig: {
+        ...baseInput.servingConfig,
+        gpuCount: 1,
+        tensorParallelSize: 1,
+        targetConcurrentRequests: 1,
+      },
+    });
+
+    expect(plan.canFitOneReplica).toBe(false);
+    expect(plan.totalGpusNeeded).toBe(0);
   });
 });
