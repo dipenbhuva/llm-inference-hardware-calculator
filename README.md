@@ -35,6 +35,16 @@ npm run build
 
 GPU hosting labs are available in [labs/README.md](labs/README.md). They walk through memory breakdowns, KV cache math, model/GPU presets, vLLM-style fit checks, diagnostics, scaling, and serving command generation.
 
+## Web App
+
+This app can be published with GitHub Pages from the `main` branch. The deploy workflow builds the Vite app with the repository base path and publishes `dist/` through GitHub Pages.
+
+Expected URL after Pages is enabled in repository settings:
+
+```text
+https://dipenbhuva.github.io/llm-inference-hardware-calculator/
+```
+
 ## Docker
 
 - to use Docker and docker compose first create a `.env` file based on the [.env.example](.env.example) and set a PORT that should be exposed
