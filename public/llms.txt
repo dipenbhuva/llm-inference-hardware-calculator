@@ -1,0 +1,32 @@
+# LLM Inference Hardware Calculator
+
+> Interactive calculator for estimating the GPU hardware needed to host large
+> language models for inference.
+
+Canonical URL: https://dipenbhuva.github.io/llm-inference-hardware-calculator/
+
+## What This Site Does
+
+- Estimates model weight memory from parameter count and quantization.
+- Calculates KV cache memory from layers, KV heads, head dimension, context
+  length, concurrency, and KV cache dtype.
+- Estimates GPU VRAM and system RAM requirements.
+- Checks vLLM-style serving capacity, tensor parallel fit, and concurrency.
+- Provides OOM diagnostics and a starter `vllm serve` command.
+
+## Useful For
+
+- AI accelerator students learning production-ready LLM inference.
+- Engineers comparing GPU choices before hosting an LLM.
+- Labs about VRAM sizing, KV cache math, tensor parallelism, replicas, and
+  serving capacity.
+
+## Important Context
+
+Model templates are reference architecture profiles, not exact public model
+names. For production sizing, compare the calculator fields with the target
+model configuration from the model provider or checkpoint repository.
+
+## Repository
+
+GitHub: https://github.com/dipenbhuva/llm-inference-hardware-calculator

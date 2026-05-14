@@ -4,10 +4,140 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="%BASE_URL%llm_calc_icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LLM Inference Hardware Calculator</title>
+    <title>LLM Inference Hardware Calculator | GPU VRAM and Serving Capacity</title>
+    <meta
+      name="description"
+      content="Estimate GPU VRAM, system RAM, KV cache memory, tensor parallel sizing, and vLLM serving capacity for hosting large language models."
+    />
+    <meta name="author" content="Dipen Bhuva" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta
+      name="googlebot"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="application-name" content="LLM Inference Hardware Calculator" />
+    <meta name="theme-color" content="#d81b60" />
+    <link
+      rel="canonical"
+      href="https://dipenbhuva.github.io/llm-inference-hardware-calculator/"
+    />
+    <link
+      rel="sitemap"
+      type="application/xml"
+      title="Sitemap"
+      href="https://dipenbhuva.github.io/llm-inference-hardware-calculator/sitemap.xml"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="LLM Inference Hardware Calculator"
+    />
+    <meta
+      property="og:description"
+      content="Browser-based calculator for estimating GPU hardware, VRAM headroom, KV cache memory, and vLLM serving capacity for LLM inference."
+    />
+    <meta
+      property="og:url"
+      content="https://dipenbhuva.github.io/llm-inference-hardware-calculator/"
+    />
+    <meta
+      property="og:image"
+      content="https://dipenbhuva.github.io/llm-inference-hardware-calculator/llm_calc_icon.png"
+    />
+    <meta property="og:site_name" content="LLM Inference Hardware Calculator" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="LLM Inference Hardware Calculator"
+    />
+    <meta
+      name="twitter:description"
+      content="Estimate GPU VRAM, KV cache memory, tensor parallel fit, and vLLM serving capacity before hosting an LLM."
+    />
+    <meta
+      name="twitter:image"
+      content="https://dipenbhuva.github.io/llm-inference-hardware-calculator/llm_calc_icon.png"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/#website",
+            "name": "LLM Inference Hardware Calculator",
+            "url": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/",
+            "description": "Estimate hardware requirements for hosting large language models on GPUs."
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/#app",
+            "name": "LLM Inference Hardware Calculator",
+            "url": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/",
+            "description": "A free browser-based calculator for GPU VRAM, system RAM, KV cache memory, tensor parallel sizing, and vLLM serving capacity for LLM inference.",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Any",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "author": {
+              "@type": "Person",
+              "name": "Dipen Bhuva"
+            },
+            "featureList": [
+              "GPU VRAM estimation",
+              "System RAM estimation",
+              "KV cache memory calculation",
+              "Tensor parallel fit checks",
+              "vLLM serving capacity estimates",
+              "OOM diagnostics",
+              "GPU and model-size templates"
+            ],
+            "audience": {
+              "@type": "Audience",
+              "audienceType": "AI accelerator students and engineers learning production LLM inference"
+            }
+          },
+          {
+            "@type": "LearningResource",
+            "@id": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/#learning-resource",
+            "name": "GPU Hosting Labs for Production-Ready AI",
+            "url": "https://dipenbhuva.github.io/llm-inference-hardware-calculator/",
+            "learningResourceType": "Interactive calculator",
+            "educationalUse": "Practice estimating hardware for LLM inference deployments",
+            "teaches": [
+              "LLM GPU memory sizing",
+              "KV cache math",
+              "vLLM serving capacity",
+              "Tensor parallelism versus replicas",
+              "Inference hardware diagnostics"
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>LLM Inference Hardware Calculator</h1>
+        <p>
+          Estimate GPU VRAM, system RAM, KV cache memory, tensor parallel
+          sizing, and vLLM serving capacity for hosting large language models.
+          Enable JavaScript to use the interactive calculator.
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
