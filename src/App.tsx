@@ -211,23 +211,30 @@ function App() {
           <h2 className="section-title">Model Configuration</h2>
 
           <label className="label-range">
-            Model Preset:
-            <Tooltip text="Optional starting point for common model sizes. Presets populate parameter count and architecture fields.">
+            Model Template:
+            <Tooltip text="Optional size-based architecture template. It is not a real model name; for production sizing, compare these fields with the target model config.">
               i
             </Tooltip>
           </label>
           <select
-            aria-label="Model Preset"
+            aria-label="Model Template"
             value={modelPresetId}
             onChange={handleModelPresetChange}
           >
-            <option value={CUSTOM_MODEL_PRESET_ID}>Custom model</option>
+            <option value={CUSTOM_MODEL_PRESET_ID}>
+              Custom model architecture
+            </option>
             {modelPresets.map((preset) => (
               <option key={preset.id} value={preset.id}>
                 {preset.name}
               </option>
             ))}
           </select>
+          <p className="field-note">
+            Reference templates estimate by size and architecture. Exact Llama,
+            Qwen, Mistral, or custom checkpoints can differ in layers, KV heads,
+            and context length.
+          </p>
 
           <label className="label-range">
             Number of Parameters (Billions):

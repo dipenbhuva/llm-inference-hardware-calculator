@@ -25,6 +25,13 @@ describe('modelPresets', () => {
     }
   });
 
+  it('uses clear user-facing template labels', () => {
+    for (const preset of modelPresets) {
+      expect(preset.name).toContain('reference template');
+      expect(preset.name.toLowerCase()).not.toContain('generic');
+    }
+  });
+
   it('looks up presets by ID', () => {
     expect(getModelPresetById('generic-7b')?.paramsBillion).toBe(7);
     expect(getModelPresetById('generic-70b')?.layers).toBe(80);

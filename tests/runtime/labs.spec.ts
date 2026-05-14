@@ -77,14 +77,25 @@ test('RT-L02 KV cache scales with context, concurrency, and dtype', async ({
   expect(q8Kv).toBeLessThan(concurrentKv * 0.6);
 });
 
-test('RT-L03 model presets populate architecture fields', async ({ page }) => {
-  await page.getByLabel('Model Preset').selectOption('generic-7b');
+test('RT-L03 model templates populate architecture fields', async ({ page }) => {
+  await page.getByLabel('Model Template').selectOption('generic-7b');
   await expect(page.getByLabel(/Number of Parameters/)).toHaveValue('7');
   await expect(page.getByLabel(/Layers/)).toHaveValue('32');
 
-  await page.getByLabel('Model Preset').selectOption('generic-70b');
+  await page.getByLabel('Model Template').selectOption('generic-70b');
   await expect(page.getByLabel(/Number of Parameters/)).toHaveValue('70');
   await expect(page.getByLabel(/Layers/)).toHaveValue('80');
+
+  await expect(
+    page.locator('select[aria-label="Model Template"] option', {
+      hasText: 'Generic 7B',
+    })
+  ).toHaveCount(0);
+  await expect(
+    page.locator('select[aria-label="Model Template"] option', {
+      hasText: '7B reference template',
+    })
+  ).toHaveCount(1);
 });
 
 test('RT-L04 GPU presets update VRAM and custom mode allows editing', async ({
@@ -103,7 +114,7 @@ test('RT-L04 GPU presets update VRAM and custom mode allows editing', async ({
 test('RT-L05 vLLM fit estimate responds to utilization and max length', async ({
   page,
 }) => {
-  await page.getByLabel('Model Preset').selectOption('generic-7b');
+  await page.getByLabel('Model Template').selectOption('generic-7b');
   await page.getByLabel('Model Quantization').selectOption('Q4');
   await page.getByLabel(/GPU Memory Utilization/).fill('0.90');
   await page.getByLabel(/Max Model Length/).fill('4096');
@@ -143,7 +154,7 @@ test('RT-L05 vLLM fit estimate responds to utilization and max length', async ({
 test('RT-L07 diagnostics explain impossible serving configurations', async ({
   page,
 }) => {
-  await page.getByLabel('Model Preset').selectOption('generic-70b');
+  await page.getByLabel('Model Template').selectOption('generic-70b');
   await page.getByLabel('Model Quantization').selectOption('F16');
   await page.getByLabel('GPU Preset').selectOption('rtx-4090-24gb');
   await page.getByLabel(/GPU Count/).fill('1');
@@ -157,7 +168,7 @@ test('RT-L07 diagnostics explain impossible serving configurations', async ({
 test('RT-L08 scaling plan separates tensor parallelism from replicas', async ({
   page,
 }) => {
-  await page.getByLabel('Model Preset').selectOption('generic-7b');
+  await page.getByLabel('Model Template').selectOption('generic-7b');
   await page.getByLabel('Model Quantization').selectOption('Q4');
   await page.getByLabel(/Concurrent Requests/).fill('500');
 

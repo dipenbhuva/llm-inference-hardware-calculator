@@ -5,7 +5,7 @@ export const CUSTOM_MODEL_PRESET_ID = 'custom';
 export const modelPresets: ModelPreset[] = [
   {
     id: 'generic-7b',
-    name: 'Generic 7B',
+    name: '7B reference template',
     paramsBillion: 7,
     layers: 32,
     hiddenSize: 4096,
@@ -16,7 +16,7 @@ export const modelPresets: ModelPreset[] = [
   },
   {
     id: 'generic-8b',
-    name: 'Generic 8B',
+    name: '8B reference template',
     paramsBillion: 8,
     layers: 32,
     hiddenSize: 4096,
@@ -27,7 +27,7 @@ export const modelPresets: ModelPreset[] = [
   },
   {
     id: 'generic-13b',
-    name: 'Generic 13B',
+    name: '13B reference template',
     paramsBillion: 13,
     layers: 40,
     hiddenSize: 5120,
@@ -38,7 +38,7 @@ export const modelPresets: ModelPreset[] = [
   },
   {
     id: 'generic-34b',
-    name: 'Generic 34B',
+    name: '34B reference template',
     paramsBillion: 34,
     layers: 48,
     hiddenSize: 8192,
@@ -49,7 +49,7 @@ export const modelPresets: ModelPreset[] = [
   },
   {
     id: 'generic-70b',
-    name: 'Generic 70B',
+    name: '70B reference template',
     paramsBillion: 70,
     layers: 80,
     hiddenSize: 8192,
@@ -60,7 +60,7 @@ export const modelPresets: ModelPreset[] = [
   },
   {
     id: 'generic-120b',
-    name: 'Generic 120B',
+    name: '120B reference template',
     paramsBillion: 120,
     layers: 96,
     hiddenSize: 12288,

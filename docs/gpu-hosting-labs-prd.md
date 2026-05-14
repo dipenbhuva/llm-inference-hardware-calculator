@@ -113,7 +113,7 @@ Calculation modules should stay framework-free TypeScript so they can be unit te
 | --- | --- | --- | --- | --- |
 | L01 | Memory Breakdown | Done | `src/calculations/memory.ts`, `src/components/MemoryBreakdownPanel.tsx`, `src/types.ts` | Unit tests, runtime test RT-L01 |
 | L02 | Real KV Cache Math | Done | `src/calculations/kvCache.ts`, `src/types.ts`, `src/App.tsx` | Unit tests, runtime test RT-L02 |
-| L03 | Model Presets | Done | `src/data/modelPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L03 |
+| L03 | Model Templates | Done | `src/data/modelPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L03 |
 | L04 | GPU Presets | Done | `src/data/gpuPresets.ts`, `src/App.tsx` | Unit tests, runtime test RT-L04 |
 | L05 | vLLM Fit Mode | Done | `src/calculations/servingCapacity.ts`, `src/components/ServingCapacityPanel.tsx` | Unit tests, runtime test RT-L05 |
 | L06 | Serving Command Generator | Done | `src/components/ServingCommandPanel.tsx`, `src/calculations/recommendations.ts` | String tests, runtime test RT-L06 |
@@ -219,7 +219,7 @@ Test cases:
 | KV dtype changes | FP16 -> Q8 | KV cache halves |
 | GQA model | attention heads `32`, KV heads `8` | KV memory uses `8` KV heads, not `32` attention heads |
 
-### L03: Model Presets
+### L03: Model Templates
 
 Student objective:
 
@@ -228,19 +228,19 @@ Start from realistic model shapes instead of only parameter count.
 Implementation:
 
 - Add `src/data/modelPresets.ts`.
-- Include generic presets first to avoid locking the app to fast-changing model catalogs.
-- Presets should populate params and architecture fields.
+- Include reference templates first to avoid locking the app to fast-changing model catalogs.
+- Templates should populate params and architecture fields.
 - Keep manual mode for custom models.
 
 Suggested presets:
 
 ```txt
-Generic 7B
-Generic 8B
-Generic 13B
-Generic 34B
-Generic 70B
-Generic 120B
+7B reference template
+8B reference template
+13B reference template
+34B reference template
+70B reference template
+120B reference template
 ```
 
 Suggested type:
@@ -261,17 +261,17 @@ export interface ModelPreset {
 
 Acceptance criteria:
 
-- Selecting a preset updates all relevant model fields.
+- Selecting a template updates all relevant model fields.
 - Switching back to custom mode allows manual edits.
-- Preset IDs are stable and unique.
+- Template IDs are stable and unique.
 
 Test cases:
 
 | Case | Input | Expected |
 | --- | --- | --- |
-| Select Generic 7B | preset dropdown | params and architecture fields update |
+| Select 7B reference template | template dropdown | params and architecture fields update |
 | Select custom | custom mode | manual inputs are enabled |
-| Preset validity | all presets | no zero or negative architecture values |
+| Template validity | all templates | no zero or negative architecture values |
 
 ### L04: GPU Presets
 
@@ -399,7 +399,7 @@ Acceptance criteria:
 - Command reflects selected tensor parallel size.
 - Command reflects selected max model length.
 - Command reflects selected KV cache dtype.
-- Command warns that model ID/path must be replaced when using generic presets.
+- Command warns that model ID/path must be replaced when using reference templates.
 
 Test cases:
 
@@ -407,7 +407,7 @@ Test cases:
 | --- | --- | --- |
 | TP 2 | tensor parallel `2` | command contains `--tensor-parallel-size 2` |
 | FP8 KV | KV dtype `fp8` | command contains `--kv-cache-dtype fp8` |
-| Generic preset | no model path | command contains placeholder |
+| Reference template | no model path | command contains placeholder |
 
 ### L07: Diagnostics/OOM Lab
 
@@ -628,11 +628,11 @@ Expected result:
 - KV memory uses KV heads, not attention heads.
 - Updating any architecture field immediately updates the memory breakdown.
 
-### RT-L03: Model Presets Runtime Test
+### RT-L03: Model Templates Runtime Test
 
 Purpose:
 
-Verify that model presets populate model architecture inputs consistently.
+Verify that model templates populate model architecture inputs consistently.
 
 Preconditions:
 
@@ -640,21 +640,21 @@ Preconditions:
 
 Steps:
 
-1. Select `Generic 7B`.
+1. Select `7B reference template`.
 2. Confirm parameter count and architecture fields are populated.
-3. Select `Generic 70B`.
+3. Select `70B reference template`.
 4. Confirm total VRAM increases.
 5. Switch to `Custom`.
 6. Edit parameter count and architecture fields manually.
-7. Switch back to `Generic 7B`.
+7. Switch back to `7B reference template`.
 
 Expected result:
 
-- Selecting a preset updates all model fields together.
-- Larger presets produce larger model weight memory.
+- Selecting a template updates all model fields together.
+- Larger templates produce larger model weight memory.
 - Custom mode allows manual edits.
-- Returning to a preset overwrites custom values with preset values.
-- No architecture field is zero, negative, or blank after selecting a preset.
+- Returning to a template overwrites custom values with template values.
+- No architecture field is zero, negative, or blank after selecting a template.
 
 ### RT-L04: GPU Presets Runtime Test
 
@@ -743,7 +743,7 @@ Expected result:
 - Command includes `--max-model-len 8192`, then updates to `16384`.
 - Command includes `--gpu-memory-utilization 0.90`.
 - Command includes `--kv-cache-dtype fp8`.
-- Generic presets produce a clear placeholder for model ID/path.
+- Reference templates produce a clear placeholder for model ID/path.
 - Command text remains copyable and does not wrap in a way that hides flags.
 
 ### RT-L07: Diagnostics Runtime Test
@@ -913,7 +913,7 @@ Start with this order:
 1. L10 Test Harness
 2. L01 Memory Breakdown
 3. L02 Real KV Cache Math
-4. L03 Model Presets
+4. L03 Model Templates
 5. L04 GPU Presets
 6. L05 vLLM Fit Mode
 7. L07 Diagnostics/OOM Lab

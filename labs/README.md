@@ -21,7 +21,7 @@ Lab sequence:
 
 1. [Memory Breakdown](./lab-01-memory-breakdown.md)
 2. [Real KV Cache Math](./lab-02-kv-cache-math.md)
-3. [Model Presets](./lab-03-model-presets.md)
+3. [Model Templates](./lab-03-model-presets.md)
 4. [GPU Presets](./lab-04-gpu-presets.md)
 5. [vLLM Fit Mode](./lab-05-vllm-fit-mode.md)
 6. [Serving Command Generator](./lab-06-serving-command.md)

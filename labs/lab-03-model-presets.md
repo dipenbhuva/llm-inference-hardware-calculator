@@ -1,10 +1,10 @@
-# Lab 03: Model Presets
+# Lab 03: Model Templates
 
 Status: Done
 
 ## Objective
 
-Let students start from realistic model shapes instead of manually entering every architecture field.
+Let students start from realistic model-size templates instead of manually entering every architecture field.
 
 ## Files
 
@@ -37,11 +37,11 @@ Use PRD runtime test `RT-L03`.
 
 Manual path:
 
-1. Select `Generic 7B`.
+1. Select `7B reference template`.
 2. Confirm parameter and architecture fields populate.
-3. Select `Generic 70B`.
+3. Select `70B reference template`.
 4. Confirm VRAM increases.
-5. Switch back to `Custom model`.
+5. Switch back to `Custom model architecture`.
 6. Confirm manual editing still works.
 
 ## Reflection
